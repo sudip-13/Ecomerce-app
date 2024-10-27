@@ -47,8 +47,8 @@
             <x-primary-button class="ml-4">
                 {{ __('Register') }}
             </x-primary-button>
-            @include('components.oauthcomp')
         </div>
     </form>
+
 
 </x-guest-layout>

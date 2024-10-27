@@ -1,21 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+async function getFirebaseConfig() {
+  const response = await fetch('/firebase-config');
+  const firebaseConfig = await response.json();
+  
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-// Replace these with your Firebase config values
-const firebaseConfig = {
-    apiKey: "",
-    authDomain: "e",
-    databaseURL: "https:/",
-    projectId: "",
-    storageBucket:"",
-    messagingSenderId: "",
-    appId: "",
-    measurementId: ""
-  };
+  return { auth, provider, signInWithPopup };
+}
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-
-export { auth, provider, signInWithPopup };
+export { getFirebaseConfig };

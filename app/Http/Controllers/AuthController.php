@@ -14,27 +14,32 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $factory = (new Factory)->withServiceAccount(base_path('fiirebase-credentials.json'))->createAuth();
+        $this->firebaseAuth = (new Factory)->withServiceAccount(base_path('fiirebase-credentials.json'))->createAuth();
     }
-    // $factory = (new Factory)->withServiceAccount('fiirebase-credentials.json.json');
+
 
     public function googleSignIn(Request $request)
     {
         $idToken = $request->input('idToken');
 
         try {
-            // Verify Firebase ID token
+
             $verifiedIdToken = $this->firebaseAuth->verifyIdToken($idToken);
             $firebaseUid = $verifiedIdToken->claims()->get('sub');
             $userEmail = $verifiedIdToken->claims()->get('email');
+            $profileImageUrl = $verifiedIdToken->claims()->get('picture') ?? null;
 
-            // Check if the user exists in your database
             $user = User::firstOrCreate(
                 ['email' => $userEmail],
-                ['name' => $verifiedIdToken->claims()->get('name')]
+                [
+                    'name' => $verifiedIdToken->claims()->get('name'),
+                    'img_url' => $profileImageUrl,
+                    'password' => $firebaseUid
+                ],
+
             );
 
-            // Log the user in with Laravel
+
             LaravelAuth::login($user);
 
             return response()->json(['message' => 'User logged in successfully'], 200);
